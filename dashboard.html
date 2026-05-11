@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meine Nuggi-Tresors</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="dashboard">
+    <div class="app-container">
+
+      <div class="card header-card">
+        <div class="avatar">👋</div>
+        <div class="header-text" onclick="window.location.href='profile.html'" style="cursor:pointer;">
+          <h1 id="userName">Hallo!</h1>
+          <p>Deine Nuggi-Tresors</p>
+        </div>
+        <div class="header-icons">
+          <button class="icon-btn" title="Wochenübersicht" onclick="window.location.href='stats.html'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="12" width="4" height="8"/><rect x="10" y="8" width="4" height="12"/><rect x="17" y="4" width="4" height="16"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="logoutBtn" title="Logout">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="tresorList">
+        <p class="loading">Wird geladen…</p>
+      </div>
+
+      <button id="addTresorBtn" class="btn-add-tresor">+ Neuen Tresor hinzufügen ✨</button>
+
+    </div>
+    <script src="js/dashboard.js"></script>
+    <script src="js/logout.js"></script>
+  </body>
+</html>

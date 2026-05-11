@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tresor hinzufügen</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="dashboard">
+    <div class="add-container">
+
+      <!-- Step 1: Name -->
+      <div id="step1" class="step">
+        <div class="step-topbar">
+          <button class="icon-btn back-btn" onclick="window.location.href='dashboard.html'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <div class="step-body">
+          <div class="avatar avatar-xl">👶</div>
+          <h1 class="step-title">Nuggi-Tresor hinzufügen</h1>
+          <p class="step-subtitle">Wie heisst dein Kind?</p>
+          <input type="text" id="childName" class="name-input" placeholder="Name des Kindes" />
+          <button id="toStep2Btn" class="btn-primary">Weiter</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Avatar -->
+      <div id="step2" class="step hidden">
+        <div class="step-topbar">
+          <button class="icon-btn back-btn" onclick="showStep(1)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <h1 class="step-title">Wähle einen Avatar</h1>
+        <p class="step-subtitle" id="avatarSubtitle">Dieser beschützt deinen Nuggi</p>
+        <div class="animal-grid" id="animalGrid"></div>
+        <button id="toStep3Btn" class="btn-primary" disabled>Tresor erstellen</button>
+      </div>
+
+      <!-- Step 3: Goal -->
+      <div id="step3" class="step hidden">
+        <div class="step-topbar">
+          <button class="icon-btn back-btn" onclick="showStep(2)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <div class="step-body">
+          <div class="avatar avatar-xl" id="selectedAvatar">🐼</div>
+          <h1 class="step-title">Tages-Ziel setzen</h1>
+          <p class="step-subtitle">Wie viele Stunden soll der Nuggi täglich im Tresor sein?</p>
+          <div class="card goal-card">
+            <div class="time-display" id="timeDisplay">8:00</div>
+            <div class="time-unit-label">Stunden : Minuten</div>
+            <div class="slider-section">
+              <div class="slider-header">
+                <span>Stunden</span>
+                <span id="hLabel" class="slider-value">8h</span>
+              </div>
+              <input type="range" id="hoursSlider" min="0" max="24" value="8" />
+              <div class="slider-marks"><span>0h</span><span>24h</span></div>
+            </div>
+            <div class="slider-section">
+              <div class="slider-header">
+                <span>Minuten</span>
+                <span id="mLabel" class="slider-value">0m</span>
+              </div>
+              <input type="range" id="minutesSlider" min="0" max="59" value="0" />
+              <div class="slider-marks"><span>0m</span><span>59m</span></div>
+            </div>
+          </div>
+          <button id="saveTresorBtn" class="btn-primary">Ziel speichern</button>
+        </div>
+      </div>
+
+    </div>
+    <script src="js/add-tresor.js"></script>
+  </body>
+</html>

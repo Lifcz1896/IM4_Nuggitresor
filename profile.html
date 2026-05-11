@@ -5,22 +5,33 @@
     <title>Profil</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <h1>Profil</h1>
+  <body class="dashboard">
+    <div class="app-container">
+    <div class="stats-page-header">
+      <button class="icon-btn back-btn" onclick="window.location.href='dashboard.html'">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <h1 class="stats-title">Profil</h1>
+      <div class="header-spacer"></div>
+    </div>
 
-    <form id="profileForm">
-      <div>
-        <label>Vorname</label>
-        <input type="text" id="firstname" required />
-      </div>
-      <div>
-        <label>Nachname</label>
-        <input type="text" id="lastname" required />
-      </div>
-      <button type="submit">Anpassen</button>
-    </form>
+    <div class="card">
+      <form id="profileForm">
+        <div>
+          <label>Vorname</label>
+          <input type="text" id="firstname" required />
+        </div>
+        <div>
+          <label>Nachname</label>
+          <input type="text" id="lastname" required />
+        </div>
+        <button type="submit" class="btn-add-tresor" style="margin-top: 8px;">Speichern</button>
+      </form>
+    </div>
 
-    <script src="js/auth.js"></script>
-    <script src="js/register.js"></script>
+    </div>
+    <script src="js/profile.js"></script>
   </body>
 </html>
