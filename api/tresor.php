@@ -29,47 +29,62 @@ try {
         exit;
     }
 
-    // Check if day has been started today
-    $dayFilter = '9999-01-01 00:00:00';
-    try {
-        $dayStmt = $pdo->prepare("SELECT start_time FROM day_starts WHERE user_id = :user_id AND date = CURDATE()");
-        $dayStmt->execute([':user_id' => $userId]);
-        $dayRow = $dayStmt->fetch(PDO::FETCH_ASSOC);
-        if ($dayRow) $dayFilter = $dayRow['start_time'];
-    } catch (Exception $e) {
-        // day_starts table not yet created
+    // Tag gestartet? → started_at aus daily_progress laden
+    $dayStarted = false;
+    $dayFilter  = '9999-01-01 00:00:00';
+
+    $dpStmt = $pdo->prepare("
+        SELECT started_at, goal_minutes, completed_minutes, percentage, goal_reached
+        FROM daily_progress
+        WHERE tresor_id = :id AND date = CURDATE()
+        LIMIT 1
+    ");
+    $dpStmt->execute([':id' => $id]);
+    $dp = $dpStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($dp) {
+        $dayStarted = true;
+        $dayFilter  = $dp['started_at'];
     }
 
-    // Today's totals – only from day_start onwards
+    // Heutiger Fortschritt – nur Sessions ab started_at (inkl. laufende Session)
     $todayStmt = $pdo->prepare("
         SELECT
             COALESCE(SUM(TIMESTAMPDIFF(SECOND, start_time, IFNULL(end_time, NOW()))), 0) AS today_seconds,
-            MAX(CASE WHEN end_time IS NULL THEN 1 ELSE 0 END) AS nuggi_in
+            MAX(CASE WHEN status = 'running' THEN 1 ELSE 0 END) AS nuggi_in,
+            MAX(CASE WHEN status = 'running' THEN start_time ELSE NULL END) AS current_session_start
         FROM nuggi_sessions
         WHERE tresor_id = :id
-          AND DATE(start_time) = CURDATE()
+          AND date = CURDATE()
           AND start_time >= :day_filter
     ");
     $todayStmt->execute([':id' => $id, ':day_filter' => $dayFilter]);
     $today = $todayStmt->fetch(PDO::FETCH_ASSOC);
 
-    // All today's sessions for Verlauf (history – unfiltered)
+    // Heutige Sessions für den Verlauf
     $sessStmt = $pdo->prepare("
-        SELECT start_time, end_time
+        SELECT start_time, end_time, duration_minutes, status
         FROM nuggi_sessions
-        WHERE tresor_id = :id AND DATE(start_time) = CURDATE()
+        WHERE tresor_id = :id
+          AND date = CURDATE()
+          AND start_time >= :day_filter
         ORDER BY start_time ASC
     ");
-    $sessStmt->execute([':id' => $id]);
+    $sessStmt->execute([':id' => $id, ':day_filter' => $dayFilter]);
     $sessions = $sessStmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
-        "status"   => "success",
-        "tresor"   => array_merge($tresor, [
-            "today_seconds" => (int)$today['today_seconds'],
-            "nuggi_in"      => (int)$today['nuggi_in'] === 1,
+        "status"      => "success",
+        "day_started" => $dayStarted,
+        "tresor"      => array_merge($tresor, [
+            "today_seconds"        => (int)$today['today_seconds'],
+            "nuggi_in"             => (int)$today['nuggi_in'] === 1,
+            "current_session_start"=> $today['current_session_start'],
+            "completed_minutes"    => $dp ? (int)$dp['completed_minutes'] : 0,
+            "percentage"           => $dp ? (int)$dp['percentage'] : 0,
+            "goal_reached"         => $dp ? (bool)$dp['goal_reached'] : false,
         ]),
-        "sessions" => $sessions,
+        "sessions"    => $sessions,
     ]);
 } catch (Exception $e) {
     http_response_code(500);
