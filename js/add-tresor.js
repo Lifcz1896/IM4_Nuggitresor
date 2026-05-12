@@ -1,17 +1,17 @@
 // add-tresor.js
 const ANIMALS = [
-  { emoji: '🐻', name: 'Bruno' },
-  { emoji: '🐰', name: 'Hoppel' },
-  { emoji: '🦊', name: 'Foxy' },
-  { emoji: '🐼', name: 'Panda' },
-  { emoji: '🦁', name: 'Leo' },
-  { emoji: '🐯', name: 'Tiger' },
-  { emoji: '🐸', name: 'Frosch' },
-  { emoji: '🦄', name: 'Unicorn' },
-  { emoji: '🐨', name: 'Koala' },
-  { emoji: '🦉', name: 'Eule' },
-  { emoji: '🐧', name: 'Pinguin' },
-  { emoji: '🦒', name: 'Giraffe' },
+  { emoji: '🐻', name: 'Bruno',   bg: 'linear-gradient(145deg, #8B5E3C, #C4936A)' },
+  { emoji: '🐰', name: 'Hoppel', bg: 'linear-gradient(145deg, #C4688A, #EFA0BC)' },
+  { emoji: '🦊', name: 'Foxy',   bg: 'linear-gradient(145deg, #D4621A, #F5A040)' },
+  { emoji: '🐼', name: 'Panda',  bg: 'linear-gradient(145deg, #3D4F60, #6A8298)' },
+  { emoji: '🦁', name: 'Leo',    bg: 'linear-gradient(145deg, #B8720E, #E8B830)' },
+  { emoji: '🐯', name: 'Tiger',  bg: 'linear-gradient(145deg, #C24A10, #E88030)' },
+  { emoji: '🐸', name: 'Frosch', bg: 'linear-gradient(145deg, #2E7D32, #5CB85C)' },
+  { emoji: '🦄', name: 'Unicorn',bg: 'linear-gradient(145deg, #7B2D8B, #C070D0)' },
+  { emoji: '🐨', name: 'Koala',  bg: 'linear-gradient(145deg, #4A6170, #8AAABB)' },
+  { emoji: '🦉', name: 'Eule',   bg: 'linear-gradient(145deg, #3D5C38, #6A9A62)' },
+  { emoji: '🐧', name: 'Pinguin',bg: 'linear-gradient(145deg, #1A3F80, #3A70B8)' },
+  { emoji: '🦒', name: 'Giraffe',bg: 'linear-gradient(145deg, #A07010, #CDA030)' },
 ];
 
 let selectedEmoji = null;
@@ -26,7 +26,7 @@ function showStep(n) {
 // Render animal grid
 document.getElementById('animalGrid').innerHTML = ANIMALS.map(
   (a) => `
-  <div class="animal-card" data-emoji="${a.emoji}" onclick="selectAnimal(this, '${a.emoji}')">
+  <div class="animal-card" data-emoji="${a.emoji}" style="background:${a.bg}" onclick="selectAnimal(this, '${a.emoji}')">
     <span class="animal-emoji">${a.emoji}</span>
     <span class="animal-name">${a.name}</span>
   </div>`
@@ -95,13 +95,13 @@ document.getElementById('saveTresorBtn').addEventListener('click', async () => {
     if (result.status === 'success') {
       window.location.href = 'dashboard.html';
     } else {
-      alert(result.message || 'Fehler beim Erstellen');
+      showToast(result.message || 'Fehler beim Erstellen');
       btn.disabled = false;
       btn.textContent = 'Ziel speichern';
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Etwas ist schiefgelaufen!');
+    showToast('Etwas ist schiefgelaufen!');
     btn.disabled = false;
     btn.textContent = 'Ziel speichern';
   }

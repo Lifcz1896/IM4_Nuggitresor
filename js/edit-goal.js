@@ -63,12 +63,12 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     if (result.status === 'success') {
       goBack();
     } else {
-      alert(result.message || 'Fehler beim Speichern.');
+      showToast(result.message || 'Fehler beim Speichern.');
       btn.disabled    = false;
       btn.textContent = 'Ziel speichern';
     }
   } catch (e) {
-    alert('Etwas ist schiefgelaufen!');
+    showToast('Etwas ist schiefgelaufen!');
     btn.disabled    = false;
     btn.textContent = 'Ziel speichern';
   }

@@ -15,13 +15,13 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const result = await response.json();
 
     if (result.status === "success") {
-      alert("Login successful!");
-      window.location.href = "dashboard.html";
+      showToast("Willkommen zurück!", "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 900);
     } else {
-      alert(result.message || "Login failed.");
+      showToast(result.message || "Login fehlgeschlagen.");
     }
   } catch (error) {
     console.error("Error:", error);
-    alert("Something went wrong!");
+    showToast("Etwas ist schiefgelaufen!");
   }
 });

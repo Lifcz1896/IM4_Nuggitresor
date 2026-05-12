@@ -9,6 +9,22 @@ function formatGoalMinutes(minutes) {
   return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
+function formatLiveDuration(isoStr) {
+  const startMs = new Date(isoStr.replace(" ", "T")).getTime();
+  const totalSecs = Math.floor((Date.now() - startMs) / 1000);
+  if (totalSecs < 60) return "gerade eben";
+  const mins = Math.floor(totalSecs / 60) % 60;
+  const hours = Math.floor(totalSecs / 3600);
+  if (hours > 0) return `${hours}h ${mins > 0 ? mins + " Min." : ""}`.trim();
+  return `${mins} Min.`;
+}
+
+function updateTimers() {
+  document.querySelectorAll(".session-timer[data-start]").forEach((el) => {
+    el.textContent = formatLiveDuration(el.dataset.start);
+  });
+}
+
 function renderTresors(tresors) {
   const list = document.getElementById("tresorList");
 
@@ -23,17 +39,19 @@ function renderTresors(tresors) {
       const nuggiIn = parseInt(t.nuggi_in, 10) === 1;
       const goalSec = (t.goal_minutes || 240) * 60;
       const fillPct = Math.min((seconds / goalSec) * 100, 100).toFixed(1);
+      const sessionStart = nuggiIn && t.current_session_start ? t.current_session_start : null;
 
       return `
         <div class="card tresor-card" onclick="window.location.href='tresor.html?id=${t.id}'" style="cursor:pointer">
           <div class="tresor-top">
-            <div class="avatar">${t.emoji || '📫'}</div>
+            <div class="avatar">${t.emoji || "📫"}</div>
             <div class="tresor-info">
               <h2>${t.name}</h2>
               <div class="tresor-status">
                 <span class="status-dot ${nuggiIn ? "in" : ""}"></span>
-                ${nuggiIn ? "Nuggi drin" : "Nuggi draußen"}
+                <span>${nuggiIn ? "Nuggi drin" : "Nuggi draußen"}</span>
               </div>
+              ${sessionStart ? `<div class="session-live-row"><span class="session-timer-icon">⏱</span><span class="session-timer" data-start="${sessionStart}">${formatLiveDuration(sessionStart)}</span></div>` : ""}
             </div>
           </div>
           <div class="tresor-bottom">
@@ -48,13 +66,13 @@ function renderTresors(tresors) {
         </div>`;
     })
     .join("");
+
+  updateTimers();
 }
 
 async function loadDashboard() {
   try {
-    const response = await fetch("api/dashboard.php", {
-      credentials: "include",
-    });
+    const response = await fetch("api/dashboard.php", { credentials: "include" });
 
     if (response.status === 401) {
       window.location.href = "login.html";
@@ -69,7 +87,6 @@ async function loadDashboard() {
         : `Hallo, ${data.user.email}!`;
     document.getElementById("userName").textContent = name;
 
-    // Day start state
     if (data.day_started) {
       const t = new Date(data.day_start_time);
       const hh = t.getHours().toString().padStart(2, "0");
@@ -95,14 +112,9 @@ document.getElementById("startDayBtn").addEventListener("click", async () => {
   btn.disabled = true;
   btn.textContent = "Wird gestartet…";
   try {
-    const res = await fetch("api/start-day.php", {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await fetch("api/start-day.php", { method: "POST", credentials: "include" });
     const result = await res.json();
-    if (result.status === "success") {
-      loadDashboard();
-    }
+    if (result.status === "success") loadDashboard();
   } catch (e) {
     btn.disabled = false;
     btn.textContent = "Tag starten";
@@ -113,4 +125,7 @@ document.getElementById("addTresorBtn").addEventListener("click", () => {
   window.location.href = "add-tresor.html";
 });
 
-window.addEventListener("load", loadDashboard);
+window.addEventListener("load", () => {
+  loadDashboard();
+  setInterval(updateTimers, 30000);
+});

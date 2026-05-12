@@ -104,25 +104,25 @@ document.getElementById('verlaufBtn').addEventListener('click', () => {
 });
 
 // Delete
-document.getElementById('deleteBtn').addEventListener('click', async () => {
-  if (!confirm(`Tresor wirklich löschen? Alle gespeicherten Daten gehen verloren.`)) return;
-
-  try {
-    const res = await fetch('api/delete-tresor.php', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: tresorId }),
-    });
-    const result = await res.json();
-    if (result.status === 'success') {
-      window.location.href = 'dashboard.html';
-    } else {
-      alert(result.message || 'Fehler beim Löschen.');
+document.getElementById('deleteBtn').addEventListener('click', () => {
+  showConfirm('Tresor wirklich löschen? Alle gespeicherten Daten gehen verloren.', async () => {
+    try {
+      const res = await fetch('api/delete-tresor.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: tresorId }),
+      });
+      const result = await res.json();
+      if (result.status === 'success') {
+        window.location.href = 'dashboard.html';
+      } else {
+        showToast(result.message || 'Fehler beim Löschen.');
+      }
+    } catch (e) {
+      showToast('Etwas ist schiefgelaufen!');
     }
-  } catch (e) {
-    alert('Etwas ist schiefgelaufen!');
-  }
+  });
 });
 
 document.getElementById('settingsBtn').addEventListener('click', () => {
