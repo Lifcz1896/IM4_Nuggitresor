@@ -43,20 +43,26 @@ try {
     $tresors = $tresorStmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($tresors as &$tresor) {
+        // JOIN mit daily_progress: nur Sessions nach dem "Tag starten" Zeitpunkt zählen
+        // Tage ohne daily_progress-Eintrag (Tag nie gestartet) ergeben 0
         $sessStmt = $pdo->prepare("
             SELECT
-                DATE(start_time) as day,
-                SUM(TIMESTAMPDIFF(SECOND, start_time, IFNULL(end_time, NOW()))) as seconds
-            FROM nuggi_sessions
-            WHERE tresor_id = :tresor_id
-              AND start_time >= :week_start
-              AND start_time < :week_end
-            GROUP BY DATE(start_time)
+                ns.date AS day,
+                SUM(TIMESTAMPDIFF(SECOND, ns.start_time, IFNULL(ns.end_time, NOW()))) AS seconds
+            FROM nuggi_sessions ns
+            JOIN daily_progress dp
+                ON dp.tresor_id = ns.tresor_id
+                AND dp.date = ns.date
+            WHERE ns.tresor_id = :tresor_id
+              AND ns.date >= :week_start
+              AND ns.date < :week_end
+              AND ns.start_time >= dp.started_at
+            GROUP BY ns.date
         ");
         $sessStmt->execute([
             ':tresor_id'  => $tresor['id'],
-            ':week_start' => $weekStart->format('Y-m-d H:i:s'),
-            ':week_end'   => $weekEnd->format('Y-m-d H:i:s'),
+            ':week_start' => $weekStart->format('Y-m-d'),
+            ':week_end'   => $weekEnd->format('Y-m-d'),
         ]);
         $rows = $sessStmt->fetchAll(PDO::FETCH_KEY_PAIR);
 
