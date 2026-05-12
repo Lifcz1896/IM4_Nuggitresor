@@ -25,7 +25,7 @@ function renderTresors(tresors) {
       const fillPct = Math.min((seconds / goalSec) * 100, 100).toFixed(1);
 
       return `
-        <div class="card tresor-card">
+        <div class="card tresor-card" onclick="window.location.href='tresor.html?id=${t.id}'" style="cursor:pointer">
           <div class="tresor-top">
             <div class="avatar">${t.emoji || '📫'}</div>
             <div class="tresor-info">
@@ -69,6 +69,19 @@ async function loadDashboard() {
         : `Hallo, ${data.user.email}!`;
     document.getElementById("userName").textContent = name;
 
+    // Day start state
+    if (data.day_started) {
+      const t = new Date(data.day_start_time);
+      const hh = t.getHours().toString().padStart(2, "0");
+      const mm = t.getMinutes().toString().padStart(2, "0");
+      document.getElementById("dayStartedInfo").textContent = `🌅 Tag gestartet um ${hh}:${mm} Uhr`;
+      document.getElementById("dayStartedInfo").classList.remove("hidden");
+      document.getElementById("startDayCard").classList.add("hidden");
+    } else {
+      document.getElementById("startDayCard").classList.remove("hidden");
+      document.getElementById("dayStartedInfo").classList.add("hidden");
+    }
+
     renderTresors(data.tresors);
   } catch (error) {
     console.error("Dashboard load error:", error);
@@ -76,6 +89,25 @@ async function loadDashboard() {
       '<p class="empty">Fehler beim Laden. Bitte Seite neu laden.</p>';
   }
 }
+
+document.getElementById("startDayBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("startDayBtn");
+  btn.disabled = true;
+  btn.textContent = "Wird gestartet…";
+  try {
+    const res = await fetch("api/start-day.php", {
+      method: "POST",
+      credentials: "include",
+    });
+    const result = await res.json();
+    if (result.status === "success") {
+      loadDashboard();
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = "Tag starten";
+  }
+});
 
 document.getElementById("addTresorBtn").addEventListener("click", () => {
   window.location.href = "add-tresor.html";

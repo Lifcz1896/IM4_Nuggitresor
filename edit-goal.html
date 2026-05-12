@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tagesziel anpassen</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="dashboard">
+    <div class="add-container">
+
+      <div class="step-topbar">
+        <button class="icon-btn back-btn" id="backBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+
+      <div class="step-body">
+        <div class="avatar avatar-xl" id="tresorEmoji">…</div>
+        <h1 class="step-title">Tages-Ziel setzen</h1>
+        <p class="step-subtitle">Wie viele Stunden soll der Nuggi täglich im Tresor sein?</p>
+
+        <div class="card goal-card">
+          <div class="time-display" id="timeDisplay">–:––</div>
+          <div class="time-unit-label">Stunden : Minuten</div>
+          <div class="slider-section">
+            <div class="slider-header">
+              <span>Stunden</span>
+              <span id="hLabel" class="slider-value">–</span>
+            </div>
+            <input type="range" id="hoursSlider" min="0" max="24" value="4" />
+            <div class="slider-marks"><span>0h</span><span>24h</span></div>
+          </div>
+          <div class="slider-section">
+            <div class="slider-header">
+              <span>Minuten</span>
+              <span id="mLabel" class="slider-value">–</span>
+            </div>
+            <input type="range" id="minutesSlider" min="0" max="59" value="0" />
+            <div class="slider-marks"><span>0m</span><span>59m</span></div>
+          </div>
+        </div>
+
+        <button id="saveBtn" class="btn-primary">Ziel speichern</button>
+        <button id="cancelBtn" class="auth-secondary-btn" style="margin-top:0">Abbrechen</button>
+      </div>
+
+    </div>
+    <script src="js/edit-goal.js"></script>
+  </body>
+</html>

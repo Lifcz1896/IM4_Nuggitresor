@@ -18,6 +18,23 @@ try {
     $userStmt->execute([':id' => $userId]);
     $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
+    // Check if day has been started today
+    $dayStarted   = false;
+    $dayStartTime = null;
+    $dayFilter    = '9999-01-01 00:00:00';
+    try {
+        $dayStmt = $pdo->prepare("SELECT start_time FROM day_starts WHERE user_id = :user_id AND date = CURDATE()");
+        $dayStmt->execute([':user_id' => $userId]);
+        $dayRow = $dayStmt->fetch(PDO::FETCH_ASSOC);
+        if ($dayRow) {
+            $dayStarted   = true;
+            $dayStartTime = $dayRow['start_time'];
+            $dayFilter    = $dayRow['start_time'];
+        }
+    } catch (Exception $e) {
+        // day_starts table not yet created – treat as day not started
+    }
+
     $tresorStmt = $pdo->prepare("
         SELECT
             t.id,
@@ -30,22 +47,26 @@ try {
             MAX(CASE WHEN ns.end_time IS NULL THEN 1 ELSE 0 END) AS nuggi_in
         FROM tresors t
         LEFT JOIN nuggi_sessions ns
-            ON ns.tresor_id = t.id AND DATE(ns.start_time) = CURDATE()
+            ON ns.tresor_id = t.id
+            AND DATE(ns.start_time) = CURDATE()
+            AND ns.start_time >= :day_filter
         WHERE t.user_id = :user_id
         GROUP BY t.id, t.name
         ORDER BY t.created_at ASC
     ");
-    $tresorStmt->execute([':user_id' => $userId]);
+    $tresorStmt->execute([':user_id' => $userId, ':day_filter' => $dayFilter]);
     $tresors = $tresorStmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
-        "status"  => "success",
-        "user"    => [
+        "status"         => "success",
+        "day_started"    => $dayStarted,
+        "day_start_time" => $dayStartTime,
+        "user"           => [
             "firstname" => $user['firstname'] ?? '',
             "lastname"  => $user['lastname']  ?? '',
             "email"     => $user['email'],
         ],
-        "tresors" => $tresors,
+        "tresors"        => $tresors,
     ]);
 } catch (Exception $e) {
     http_response_code(500);

@@ -30,6 +30,16 @@ CREATE TABLE IF NOT EXISTS `tresors` (
 -- ALTER TABLE `tresors` ADD COLUMN `emoji` VARCHAR(10) DEFAULT '📫';
 -- ALTER TABLE `tresors` ADD COLUMN `goal_minutes` INT NOT NULL DEFAULT 240;
 
+CREATE TABLE IF NOT EXISTS `day_starts` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_date` (`user_id`, `date`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS `nuggi_sessions` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tresor_id` INT NOT NULL,

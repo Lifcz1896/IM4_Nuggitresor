@@ -48,9 +48,6 @@ body.dashboard h1 {
   margin-bottom: 0;
 }
 
-body.dashboard button {
-  padding: 0;
-}
 
 .app-container {
   max-width: 440px;
@@ -58,7 +55,7 @@ body.dashboard button {
   padding: 28px 16px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .card {
@@ -119,11 +116,18 @@ body.dashboard button {
   padding: 4px;
 }
 
+#tresorList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 /* Tresor cards */
 .tresor-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
+  padding: 28px 24px;
 }
 
 .tresor-top {
@@ -191,16 +195,172 @@ body.dashboard button {
 /* Add button */
 .btn-add-tresor {
   width: 100%;
-  padding: 18px;
+  padding: 32px 18px;
   background: linear-gradient(135deg, #E8854A 0%, #F5C040 100%);
   color: #fff;
   border: none;
   border-radius: 16px;
-  font-size: 1.05em;
+  font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
   letter-spacing: 0.01em;
 }
+
+/* Start Day */
+.start-day-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.start-day-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.start-day-icon { font-size: 1.8em; }
+
+.start-day-info strong { display: block; color: #1a1a2e; font-size: 0.95em; }
+.start-day-info p { margin: 2px 0 0; font-size: 0.8em; color: #aaa; }
+
+.btn-start-day {
+  background: linear-gradient(135deg, #E8854A, #F5C040);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.day-started-info {
+  text-align: center;
+  font-size: 0.85em;
+  color: #aaa;
+  padding: 2px 0;
+}
+
+.hidden { display: none !important; }
+
+/* ===== TRESOR DETAIL ===== */
+.tresor-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.tresor-detail-title {
+  font-size: 1.1em;
+  color: #1a1a2e;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 24px 32px;
+  gap: 10px;
+  text-align: center;
+}
+
+.status-card.nuggi-out {
+  border: 2px dashed #b0c4de;
+}
+
+.status-card.nuggi-in {
+  border: 2px solid #4CAF50;
+  background: #f4fff6;
+}
+
+.status-title {
+  font-size: 1.5em;
+  color: #1a1a2e;
+  margin: 8px 0 0;
+}
+
+.status-subtitle {
+  color: #aaa;
+  margin: 0;
+  font-size: 0.95em;
+}
+
+.goal-detail-card { padding: 20px 24px; }
+
+.goal-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.goal-detail-label { font-size: 1em; color: #1a1a2e; }
+
+.goal-detail-numbers {
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #1a1a2e;
+}
+
+.remaining-pill {
+  display: inline-block;
+  background: #FDE8D5;
+  color: #E8854A;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.88em;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.remaining-pill.goal-reached {
+  background: #e8f5e9;
+  color: #43A047;
+}
+
+.verlauf-toggle-btn {
+  font-size: 1em;
+  color: #333;
+  text-align: center;
+}
+
+.verlauf-card { padding: 20px 24px; }
+
+.verlauf-title {
+  font-size: 1em;
+  color: #1a1a2e;
+  margin: 0 0 14px;
+}
+
+.session-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9em;
+}
+
+.session-row:last-child { border-bottom: none; }
+.session-time { color: #555; }
+.session-dur  { color: #E8854A; font-weight: 600; }
+
+.delete-tresor-btn {
+  color: #e74c3c;
+  font-size: 1em;
+  text-align: center;
+}
+
+/* ===== END TRESOR DETAIL ===== */
 
 .loading, .empty {
   color: #aaa;
