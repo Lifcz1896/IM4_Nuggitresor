@@ -88,7 +88,7 @@ async function loadDashboard() {
     document.getElementById("userName").textContent = name;
 
     if (data.day_started) {
-      const t = new Date(data.day_start_time);
+      const t = new Date(data.day_start_at.replace(" ", "T"));
       const hh = t.getHours().toString().padStart(2, "0");
       const mm = t.getMinutes().toString().padStart(2, "0");
       document.getElementById("dayStartedInfo").textContent = `🌅 Tag gestartet um ${hh}:${mm} Uhr`;
