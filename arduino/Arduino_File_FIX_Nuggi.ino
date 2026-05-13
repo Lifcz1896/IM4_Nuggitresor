@@ -6,8 +6,8 @@
  *   { "token": "DEIN_DEVICE_TOKEN", "status": "out" }
  *
  * PN532 I2C:
- * SDA -> ESP32-C6 GPIO 6
- * SCL -> ESP32-C6 GPIO 7
+ * SDA -> ESP32-C6 GPIO 5
+ * SCL -> ESP32-C6 GPIO 6
  * VCC -> 3.3V
  * GND -> GND
  ******************************************************************/
@@ -17,6 +17,7 @@
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
 #include <Adafruit_PN532.h>
+#include <Adafruit_NeoPixel.h>
 
 // ========================== WLAN / SERVER ==========================
 
@@ -38,6 +39,13 @@ const char* DEVICE_TOKEN = "nfnENGqDe9d7*DN60JOz8wq&uk#uW!pL";
 
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET, &Wire);
 
+// ========================== LED RING ==========================
+
+#define LED_RING_PIN   4   // GPIO Pin für LED Ring Data → anpassen
+#define LED_RING_COUNT 12  // Anzahl LEDs im Ring → anpassen
+
+Adafruit_NeoPixel ring(LED_RING_COUNT, LED_RING_PIN, NEO_GRB + NEO_KHZ800);
+
 // ========================== TIMING ==========================
 
 // Wenn Nuggi drin ist: alle 2 Sekunden "in" senden
@@ -53,6 +61,9 @@ unsigned long lastTagSeenTime = 0;
 bool nuggiCurrentlyInside = false;
 bool lastSentOut = false;
 
+// Letzter bekannter Fortschritt vom Server (0–100)
+int g_percentage = 0;
+
 // Built-in RGB LED
 int led = LED_BUILTIN;
 
@@ -63,6 +74,10 @@ void setup() {
   delay(1000);
 
   pinMode(led, OUTPUT);
+
+  ring.begin();
+  ring.setBrightness(80);
+  ring.show(); // alle LEDs aus
 
   Serial.println("Starte Nuggi-Tresor...");
 
@@ -132,12 +147,29 @@ void loop() {
       sendStatus("out");
       lastSentOut = true;
 
-      rgbLedWrite(led, 255, 0, 0); // grün/rot je nach Board-Farbreihenfolge
+      rgbLedWrite(led, 255, 0, 0);
       delay(300);
     }
   }
 
+  // LED Ring mit aktuellem Fortschritt aktualisieren
+  updateLedRing(g_percentage);
+
   delay(200);
+}
+
+// ========================== LED RING ==========================
+
+void updateLedRing(int percentage) {
+  int ledsOn = (int)round((float)LED_RING_COUNT * percentage / 100.0);
+  for (int i = 0; i < LED_RING_COUNT; i++) {
+    if (i < ledsOn) {
+      ring.setPixelColor(i, ring.Color(0, 200, 0)); // grün = Fortschritt
+    } else {
+      ring.setPixelColor(i, 0); // aus
+    }
+  }
+  ring.show();
 }
 
 // ========================== NFC LESEN ==========================
@@ -198,9 +230,17 @@ void sendStatus(String status) {
 
     Serial.print("HTTP Response Code: ");
     Serial.println(httpResponseCode);
-
     Serial.print("Antwort Server: ");
     Serial.println(response);
+
+    // Fortschritt aus Server-Antwort lesen und speichern
+    JSONVar obj = JSON.parse(response);
+    if (JSON.typeof(obj) == "object" && obj.hasOwnProperty("percentage")) {
+      g_percentage = (int)obj["percentage"];
+      Serial.print("Aktueller Fortschritt: ");
+      Serial.print(g_percentage);
+      Serial.println("%");
+    }
   } else {
     Serial.print("Fehler beim Senden: ");
     Serial.println(httpResponseCode);

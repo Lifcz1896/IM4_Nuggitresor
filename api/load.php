@@ -66,12 +66,12 @@ if ($status === 'in') {
 
     // Prüfen ob bereits eine laufende Session existiert
     $runStmt = $pdo->prepare("
-        SELECT id FROM nuggi_sessions
+        SELECT id, start_time FROM nuggi_sessions
         WHERE tresor_id = :tresor_id AND date = CURDATE() AND status = 'running'
         LIMIT 1
     ");
     $runStmt->execute([':tresor_id' => $tresorId]);
-    $running = $runStmt->fetch();
+    $running = $runStmt->fetch(PDO::FETCH_ASSOC);
 
     // Keine laufende Session → neue starten
     if (!$running) {
@@ -79,14 +79,48 @@ if ($status === 'in') {
             INSERT INTO nuggi_sessions (tresor_id, start_time, date, status)
             VALUES (:tresor_id, NOW(), CURDATE(), 'running')
         ")->execute([':tresor_id' => $tresorId]);
+        $runningMinutes = 0;
+    } else {
+        // Aktuelle Dauer der laufenden Session berechnen
+        $diffStmt = $pdo->prepare("SELECT GREATEST(TIMESTAMPDIFF(MINUTE, :start_time, NOW()), 0)");
+        $diffStmt->execute([':start_time' => $running['start_time']]);
+        $runningMinutes = (int)$diffStmt->fetchColumn();
     }
+
+    // Summe aller abgeschlossenen Sessions + laufende Session
+    $sumStmt = $pdo->prepare("
+        SELECT COALESCE(SUM(duration_minutes), 0) AS total
+        FROM nuggi_sessions
+        WHERE tresor_id = :tresor_id AND date = CURDATE() AND status = 'finished'
+    ");
+    $sumStmt->execute([':tresor_id' => $tresorId]);
+    $finishedMinutes = (int)$sumStmt->fetchColumn();
+
+    $totalMinutes = $finishedMinutes + $runningMinutes;
+    $goalMinutes  = (int)$dp['goal_minutes'];
+    $percentage   = $goalMinutes > 0 ? min(100, (int)round($totalMinutes / $goalMinutes * 100)) : 0;
+    $goalReached  = $totalMinutes >= $goalMinutes ? 1 : 0;
+
+    // daily_progress live aktualisieren
+    $pdo->prepare("
+        UPDATE daily_progress
+        SET completed_minutes = :completed,
+            percentage        = :percentage,
+            goal_reached      = :goal_reached
+        WHERE tresor_id = :tresor_id AND date = CURDATE()
+    ")->execute([
+        ':completed'    => $totalMinutes,
+        ':percentage'   => $percentage,
+        ':goal_reached' => $goalReached,
+        ':tresor_id'    => $tresorId,
+    ]);
 
     echo json_encode([
         "status"            => "ok",
-        "goal_minutes"      => (int)$dp['goal_minutes'],
-        "completed_minutes" => (int)$dp['completed_minutes'],
-        "percentage"        => (int)$dp['percentage'],
-        "goal_reached"      => (bool)$dp['goal_reached'],
+        "goal_minutes"      => $goalMinutes,
+        "completed_minutes" => $totalMinutes,
+        "percentage"        => $percentage,
+        "goal_reached"      => (bool)$goalReached,
     ]);
     exit;
 }
