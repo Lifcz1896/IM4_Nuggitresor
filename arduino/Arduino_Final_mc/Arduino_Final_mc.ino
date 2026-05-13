@@ -6,8 +6,8 @@
  *   { "token": "DEIN_DEVICE_TOKEN", "status": "out" }
  *
  * PN532 I2C:
- * SDA -> ESP32-C6 GPIO 5
- * SCL -> ESP32-C6 GPIO 6
+ * SDA -> ESP32-C6 GPIO 6
+ * SCL -> ESP32-C6 GPIO 7
  * VCC -> 3.3V
  * GND -> GND
  ******************************************************************/
@@ -34,17 +34,17 @@ const char* DEVICE_TOKEN = "nfnENGqDe9d7*DN60JOz8wq&uk#uW!pL";
 #define SDA_PIN 5
 #define SCL_PIN 6
 
-#define PN532_IRQ   2
-#define PN532_RESET 3
+#define PN532_IRQ   8
+#define PN532_RESET 9
 
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET, &Wire);
 
 // ========================== LED RING ==========================
 
-#define LED_RING_PIN   4   // GPIO Pin für LED Ring Data → anpassen
-#define LED_RING_COUNT 12  // Anzahl LEDs im Ring → anpassen
+#define PIN 2
+#define NUM_PIXELS 12
 
-Adafruit_NeoPixel ring(LED_RING_COUNT, LED_RING_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 // ========================== TIMING ==========================
 
@@ -61,9 +61,6 @@ unsigned long lastTagSeenTime = 0;
 bool nuggiCurrentlyInside = false;
 bool lastSentOut = false;
 
-// Letzter bekannter Fortschritt vom Server (0–100)
-int g_percentage = 0;
-
 // Built-in RGB LED
 int led = LED_BUILTIN;
 
@@ -75,9 +72,10 @@ void setup() {
 
   pinMode(led, OUTPUT);
 
-  ring.begin();
-  ring.setBrightness(80);
-  ring.show(); // alle LEDs aus
+  strip.begin();
+  strip.setBrightness(50);
+  strip.clear();
+  strip.show();
 
   Serial.println("Starte Nuggi-Tresor...");
 
@@ -147,29 +145,12 @@ void loop() {
       sendStatus("out");
       lastSentOut = true;
 
-      rgbLedWrite(led, 255, 0, 0);
+      rgbLedWrite(led, 255, 0, 0); // grün/rot je nach Board-Farbreihenfolge
       delay(300);
     }
   }
 
-  // LED Ring mit aktuellem Fortschritt aktualisieren
-  updateLedRing(g_percentage);
-
   delay(200);
-}
-
-// ========================== LED RING ==========================
-
-void updateLedRing(int percentage) {
-  int ledsOn = (int)round((float)LED_RING_COUNT * percentage / 100.0);
-  for (int i = 0; i < LED_RING_COUNT; i++) {
-    if (i < ledsOn) {
-      ring.setPixelColor(i, ring.Color(0, 200, 0)); // grün = Fortschritt
-    } else {
-      ring.setPixelColor(i, 0); // aus
-    }
-  }
-  ring.show();
 }
 
 // ========================== NFC LESEN ==========================
@@ -202,6 +183,22 @@ bool readNfcTag() {
   return false;
 }
 
+// ========================== LED RING ==========================
+
+void showPercentageOnRing(int percentage) {
+  percentage = constrain(percentage, 0, 100);
+
+  int pixels = round((percentage / 100.0) * NUM_PIXELS);
+
+  strip.clear();
+
+  for(int i = 0; i < pixels; i++) {
+    strip.setPixelColor(i, strip.Color(0, 255, 0)); // grün
+  }
+
+  strip.show();
+}
+
 // ========================== DATEN SENDEN ==========================
 
 void sendStatus(String status) {
@@ -230,17 +227,19 @@ void sendStatus(String status) {
 
     Serial.print("HTTP Response Code: ");
     Serial.println(httpResponseCode);
+
     Serial.print("Antwort Server: ");
     Serial.println(response);
 
-    // Fortschritt aus Server-Antwort lesen und speichern
-    JSONVar obj = JSON.parse(response);
-    if (JSON.typeof(obj) == "object" && obj.hasOwnProperty("percentage")) {
-      g_percentage = (int)obj["percentage"];
-      Serial.print("Aktueller Fortschritt: ");
-      Serial.print(g_percentage);
-      Serial.println("%");
+    JSONVar responseObject = JSON.parse(response);
+
+    if (JSON.typeof(responseObject) != "undefined") {
+      if (responseObject.hasOwnProperty("percentage")) {
+        int percentage = (int) responseObject["percentage"];
+        showPercentageOnRing(percentage);
+      }
     }
+
   } else {
     Serial.print("Fehler beim Senden: ");
     Serial.println(httpResponseCode);
