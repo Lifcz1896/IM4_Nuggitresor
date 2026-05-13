@@ -19,14 +19,14 @@
     </div>
 
     <div class="card">
-      <form id="profileForm">
-        <div>
-          <label>Vorname</label>
-          <input type="text" id="firstname" required />
+      <form id="profileForm" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input type="text" id="firstname" placeholder="Vorname" required />
         </div>
-        <div>
-          <label>Nachname</label>
-          <input type="text" id="lastname" required />
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input type="text" id="lastname" placeholder="Nachname" required />
         </div>
         <button type="submit" class="btn-add-tresor" style="margin-top: 8px;">Speichern</button>
       </form>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handbuch – Nuggi-Tresor</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .handbuch-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .handbuch-item {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 20px;
+      }
+
+      .handbuch-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(145deg, #F5C040, #E8854A);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(232, 133, 74, 0.28);
+      }
+
+      .handbuch-text h3 {
+        font-size: 1em;
+        color: #1a1a2e;
+        margin: 0 0 4px;
+      }
+
+      .handbuch-text p {
+        font-size: 0.88em;
+        color: #888;
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .handbuch-divider {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body class="dashboard">
+    <div class="app-container">
+
+      <div class="stats-page-header">
+        <button class="icon-btn back-btn" onclick="window.location.href='dashboard.html'">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <h1 class="stats-title">📖 Handbuch</h1>
+        <div class="header-spacer"></div>
+      </div>
+
+      <div class="card handbuch-grid">
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">🏠</div>
+          <div class="handbuch-text">
+            <h3>Tresor erstellen</h3>
+            <p>Lege für jedes Kind einen eigenen Tresor an. Gib ihm einen Namen und wähle ein Tier-Maskottchen sowie ein tägliches Ziel (nuggi-freie Stunden).</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">🌅</div>
+          <div class="handbuch-text">
+            <h3>Tag starten</h3>
+            <p>Starte jeden Morgen den Tag im Dashboard. Erst danach wird die nuggi-freie Zeit des Tages erfasst und auf dein Tagesziel angerechnet.</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">✅</div>
+          <div class="handbuch-text">
+            <h3>Nuggi rein / raus</h3>
+            <p>Tippe auf einen Tresor und starte oder stoppe eine Session. Die App misst automatisch, wie lange der Nuggi draussen war.</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">🎯</div>
+          <div class="handbuch-text">
+            <h3>Tagesziel</h3>
+            <p>Jeder Tresor hat ein individuelles Tagesziel in Stunden. Die Fortschrittsleiste im Dashboard zeigt, wie nah du dem Ziel bist.</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">📊</div>
+          <div class="handbuch-text">
+            <h3>Wochenstatistik</h3>
+            <p>Unter «Statistik» siehst du die täglichen nuggi-freien Zeiten der letzten Wochen als Balkendiagramm – pro Tresor und mit Ziel-Markierung.</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">🕓</div>
+          <div class="handbuch-text">
+            <h3>Session-Verlauf</h3>
+            <p>In der Tresor-Detailansicht findest du alle bisherigen Sessions des Tages mit Uhrzeit und Dauer.</p>
+          </div>
+        </div>
+
+        <hr class="handbuch-divider" />
+
+        <div class="handbuch-item">
+          <div class="handbuch-icon">👤</div>
+          <div class="handbuch-text">
+            <h3>Profil</h3>
+            <p>Unter «Profil» kannst du deinen Anzeigenamen anpassen und dich ausloggen.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <script src="js/sidebar.js"></script>
+  </body>
+</html>
