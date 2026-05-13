@@ -54,12 +54,18 @@ unsigned long inSendInterval = 2000;
 // Nach so viel Zeit ohne Tag gilt Nuggi als rausgenommen
 unsigned long tagTimeout = 3000;
 
+// Nach dem Rausnehmen LEDs nach 30 Sekunden ausschalten
+unsigned long ledOffDelay = 30000;
+unsigned long nuggiOutTime = 0;
+
 unsigned long lastInSendTime = 0;
 unsigned long lastTagSeenTime = 0;
 
 // Status merken
 bool nuggiCurrentlyInside = false;
 bool lastSentOut = false;
+bool ledsTurnedOff = false;
+bool goalAlreadyBlinked = false;
 
 // Built-in RGB LED
 int led = LED_BUILTIN;
@@ -115,6 +121,7 @@ void loop() {
 
   if (tagDetected) {
     lastTagSeenTime = millis();
+    ledsTurnedOff = false;
 
     // Nuggi wurde neu reingelegt
     if (!nuggiCurrentlyInside) {
@@ -144,9 +151,20 @@ void loop() {
       Serial.println("Nuggi entfernt: STATUS OUT");
       sendStatus("out");
       lastSentOut = true;
+      nuggiOutTime = millis();
 
       rgbLedWrite(led, 255, 0, 0); // grün/rot je nach Board-Farbreihenfolge
       delay(300);
+    }
+  }
+
+  // Wenn Nuggi draussen ist, LED-Ring nach 30 Sekunden ausschalten
+  if (!nuggiCurrentlyInside && lastSentOut && !ledsTurnedOff) {
+    if (millis() - nuggiOutTime >= ledOffDelay) {
+      strip.clear();
+      strip.show();
+      ledsTurnedOff = true;
+      Serial.println("LED-Ring ausgeschaltet.");
     }
   }
 
@@ -193,6 +211,36 @@ void showPercentageOnRing(int percentage) {
   strip.clear();
 
   for(int i = 0; i < pixels; i++) {
+    strip.setPixelColor(i, strip.Color(0, 255, 0)); // grün
+  }
+
+  strip.show();
+
+  if (percentage >= 100 && !goalAlreadyBlinked) {
+    blinkRingGreen();
+    goalAlreadyBlinked = true;
+  }
+
+  if (percentage < 100) {
+    goalAlreadyBlinked = false;
+  }
+}
+
+void blinkRingGreen() {
+  for(int b = 0; b < 5; b++) {
+    for(int i = 0; i < NUM_PIXELS; i++) {
+      strip.setPixelColor(i, strip.Color(0, 255, 0)); // grün
+    }
+
+    strip.show();
+    delay(300);
+
+    strip.clear();
+    strip.show();
+    delay(300);
+  }
+
+  for(int i = 0; i < NUM_PIXELS; i++) {
     strip.setPixelColor(i, strip.Color(0, 255, 0)); // grün
   }
 
