@@ -47,14 +47,12 @@ function renderStats(data) {
   }
 
   document.getElementById('tresorStats').innerHTML = data.tresors.map((tresor) => {
-    const goalSec = tresor.goal_minutes * 60;
-
     const barsHtml = tresor.days.map((day) => {
       const dayDate = new Date(day.date + 'T00:00:00');
       const isToday = dayDate.getTime() === today.getTime();
       const dayLabel = DAYS_SHORT[dayDate.getDay()];
-      const pct = goalSec > 0 ? Math.min((day.seconds / goalSec) * 100, 100) : 0;
-      const goalReached = day.seconds >= goalSec && goalSec > 0;
+      const pct = Math.min(day.percentage, 100);
+      const goalReached = day.goal_reached;
       const barClass = day.seconds > 0 ? (goalReached ? 'goal-reached' : 'in-progress') : '';
       const timeLabel = formatSecondsShort(day.seconds);
 

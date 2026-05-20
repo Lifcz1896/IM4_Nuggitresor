@@ -48,7 +48,9 @@ try {
         $sessStmt = $pdo->prepare("
             SELECT
                 ns.date AS day,
-                SUM(TIMESTAMPDIFF(SECOND, ns.start_time, IFNULL(ns.end_time, NOW()))) AS seconds
+                SUM(TIMESTAMPDIFF(SECOND, ns.start_time, IFNULL(ns.end_time, NOW()))) AS seconds,
+                MAX(dp.goal_reached) AS goal_reached,
+                MAX(dp.percentage) AS percentage
             FROM nuggi_sessions ns
             JOIN daily_progress dp
                 ON dp.tresor_id = ns.tresor_id
@@ -64,16 +66,23 @@ try {
             ':week_start' => $weekStart->format('Y-m-d'),
             ':week_end'   => $weekEnd->format('Y-m-d'),
         ]);
-        $rows = $sessStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+        $rows = $sessStmt->fetchAll(PDO::FETCH_ASSOC);
+        $rowsByDate = [];
+        foreach ($rows as $row) {
+            $rowsByDate[$row['day']] = $row;
+        }
 
         $days = [];
         for ($i = 0; $i < 7; $i++) {
             $day = clone $weekStart;
             $day->modify("+$i days");
             $dateStr = $day->format('Y-m-d');
+            $row = $rowsByDate[$dateStr] ?? null;
             $days[] = [
-                'date'    => $dateStr,
-                'seconds' => (int)($rows[$dateStr] ?? 0),
+                'date'         => $dateStr,
+                'seconds'      => (int)($row['seconds'] ?? 0),
+                'goal_reached' => (bool)($row['goal_reached'] ?? false),
+                'percentage'   => (int)($row['percentage'] ?? 0),
             ];
         }
         $tresor['days'] = $days;

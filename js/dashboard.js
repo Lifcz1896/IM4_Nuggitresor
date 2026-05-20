@@ -37,8 +37,7 @@ function renderTresors(tresors) {
     .map((t) => {
       const seconds = parseInt(t.today_seconds, 10);
       const nuggiIn = parseInt(t.nuggi_in, 10) === 1;
-      const goalSec = (t.goal_minutes || 240) * 60;
-      const fillPct = Math.min((seconds / goalSec) * 100, 100).toFixed(1);
+      const fillPct = Math.min(parseInt(t.percentage, 10), 100);
       const sessionStart = nuggiIn && t.current_session_start ? t.current_session_start : null;
 
       return `

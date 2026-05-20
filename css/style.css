@@ -52,7 +52,7 @@ body.dashboard h1 {
 .app-container {
   max-width: 440px;
   margin: 0 auto;
-  padding: 28px 16px 40px;
+  padding: 28px 16px 100px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1196,4 +1196,51 @@ input[type="range"]::-moz-range-thumb {
 .app-confirm-btn--cancel {
   background: #f2f2f2;
   color: #555;
+}
+
+.back-btn { display: none; }
+
+@media (min-width: 768px) {
+  .back-btn { display: flex; }
+}
+
+/* ===== MOBILE BOTTOM TAB BAR ===== */
+.mobile-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #f0e8df;
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+  z-index: 200;
+}
+
+.mobile-nav-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  color: #bbb;
+  text-decoration: none;
+  font-size: 0.65em;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.mobile-nav-link--active {
+  color: #E8854A;
+}
+
+@media (min-width: 768px) {
+  .mobile-nav {
+    display: none;
+  }
+
+  .app-container {
+    padding-bottom: 40px;
+  }
 }

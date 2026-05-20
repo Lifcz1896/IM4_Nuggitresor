@@ -48,7 +48,7 @@ function render(data) {
   // Goal
   const goalSec    = tresor.goal_minutes * 60;
   const todaySec   = tresor.today_seconds;
-  const fillPct    = goalSec > 0 ? Math.min((todaySec / goalSec) * 100, 100) : 0;
+  const fillPct    = Math.min(tresor.percentage, 100);
   const remainSec  = Math.max(goalSec - todaySec, 0);
 
   document.getElementById('goalNumbers').textContent =
