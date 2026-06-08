@@ -77,6 +77,193 @@ Die Datenbank speichert pro Tag eine Zusammenfassung (Tagesziel, absolvierte Min
 
 ---
 
+---
+
+## Physical Computing
+
+### Komponentenplan
+
+| Komponente | Typ | Aufgabe |
+|------------|------|----------|
+| ESP32-C6 | Mikrocontroller | Verarbeitet Sensordaten und kommuniziert mit der Web-App |
+| PN532 NFC Reader | Sensor | Erkennt den Nuggi im Tresor |
+| NFC-Tag | Sensorobjekt | Wird am Nuggi befestigt |
+| WS2812B LED-Ring (12 LEDs) | Aktor | Zeigt den Fortschritt visuell an |
+| WLAN | Kommunikation | Verbindung zur Datenbank und Web-App |
+
+---
+
+#### Komponentenplan
+
+![Komponentenplan](imgreadme/komponentenplan.png)
+
+### Sensoren und Aktoren
+
+#### Sensor: PN532 NFC Reader
+
+Der PN532 NFC Reader erkennt, ob sich der Nuggi im Tresor befindet. Am Nuggi ist ein NFC-Tag befestigt. Sobald der Schnuller in die Box gelegt wird, erkennt der Sensor den Tag und sendet die Information an den ESP32.
+
+Folgende Zustände werden erkannt:
+
+- `in` → Nuggi befindet sich im Tresor
+- `out` → Nuggi wurde entfernt
+
+Diese Information wird anschliessend an die Datenbank übertragen.
+
+#### Aktor: WS2812B LED-Ring
+
+Der LED-Ring dient als visuelle Rückmeldung für das Kind.
+
+Die 12 LEDs zeigen den Fortschritt der nuggi-freien Zeit an.
+
+| Fortschritt | LEDs |
+|------------|------|
+| 0 % | 0 LEDs |
+| 25 % | 3 LEDs |
+| 50 % | 6 LEDs |
+| 75 % | 9 LEDs |
+| 100 % | 12 LEDs |
+
+Sobald das Tagesziel erreicht wird, blinkt der Ring fünfmal grün als Belohnung.
+
+Wird der Schnuller entfernt, bleibt der aktuelle Fortschritt zunächst sichtbar. Nach 30 Sekunden werden die LEDs automatisch ausgeschaltet.
+
+---
+
+### User Flow
+
+1. Eltern setzen in der Web-App ein Tagesziel und der Tag wird gestartet.
+2. Der Schnuller wird in den Tresor gelegt.
+3. Der NFC Reader erkennt den NFC-Tag.
+4. Der ESP32 sendet den Status `in` an die Datenbank.
+5. Die Datenbank startet oder aktualisiert die Nuggi-Session.
+6. Die nuggi-freie Zeit wird laufend gezählt.
+7. Die API berechnet den Fortschritt in Prozent.
+8. Der LED-Ring zeigt den Fortschritt in Echtzeit an.
+9. Wird der Schnuller entfernt, sendet der ESP32 den Status `out`.
+10. Die Session wird gespeichert.
+11. Beim erneuten Einlegen läuft die Zeit weiter.
+
+---
+
+### Kommunikationswege
+
+1. Der PN532 NFC Reader erkennt den NFC-Tag.
+2. Der ESP32 verarbeitet die Information.
+3. Der ESP32 sendet den Status (`in` oder `out`) per HTTP an die API.
+4. Die PHP API aktualisiert die Datenbank.
+5. Die Datenbank berechnet den aktuellen Fortschritt.
+6. Die API sendet den Prozentwert zurück an den ESP32.
+7. Der ESP32 aktualisiert den LED-Ring anhand des aktuellen Fortschritts.
+8. Die Web-App liest dieselben Daten aus der Datenbank und zeigt sie den Eltern an.
+
+---
+
+### Steckschema
+
+#### Plan
+
+![Steckplan](imgreadme/Steckplan.jpeg)
+
+---
+
+### Bilder
+
+#### Aufbau des Prototyps
+
+##### LED-Ring
+
+![LED Ring](imgreadme/LEDRing.jpeg)
+![LED Ring leuchtet](imgreadme/LEDRingleuchtet.jpeg)
+
+##### ESP32 mit NFC Reader und Batterie
+
+![Steckplan Bild](imgreadme/Steckplan_Bild.jpeg)
+![Steckplan Bild mit Batterie](imgreadme/MitBatterie.jpeg)
+
+
+##### Nuggi Tresor
+
+![fertiger Nuggi Tresor mit 3d-Box](imgreadme/NuggiTresor.jpeg)
+---
+
+### Reproduzierbarkeit Physical Computing
+
+#### 1. Hardware anschliessen
+
+- PN532 NFC Reader gemäss Steckschema verbinden
+- LED-Ring an GPIO 2 anschliessen
+- Gemeinsame Masse (GND) verwenden
+- LED-Ring idealerweise mit externer 5V-Stromversorgung betreiben
+
+#### 2. Arduino Libraries installieren
+
+Folgende Libraries installieren:
+
+- Adafruit PN532
+- Adafruit NeoPixel
+- Arduino_JSON
+
+#### 3. WLAN konfigurieren
+
+Im Arduino-Code folgende Werte anpassen:
+
+```cpp
+const char* ssid = "WLAN_NAME";
+const char* pass = "WLAN_PASSWORT";
+```
+
+#### 4. Device Token hinterlegen
+
+```cpp
+const char* DEVICE_TOKEN = "DEIN_DEVICE_TOKEN";
+```
+
+Der Token muss in der Datenbank-Tabelle `devices` hinterlegt sein.
+
+#### 5. Firmware hochladen
+
+- ESP32-C6 Board auswählen
+- COM-Port auswählen
+- Sketch hochladen
+
+Nach erfolgreichem Start verbindet sich der ESP32 automatisch mit der Web-App und beginnt Daten zu übertragen.
+
+---
+
+### Datenschnittstelle zwischen Web-App und Physical Computing
+
+#### Anfrage vom ESP32
+
+```json
+{
+  "token": "device_token",
+  "status": "in"
+}
+```
+
+oder
+
+```json
+{
+  "token": "device_token",
+  "status": "out"
+}
+```
+
+#### Antwort der API
+
+```json
+{
+  "status": "ok",
+  "completed_minutes": 91,
+  "percentage": 30,
+  "goal_reached": false
+}
+```
+
+Der Wert `percentage` wird vom ESP32 verwendet, um den LED-Ring in Echtzeit zu aktualisieren.
+
 ## Gemeinsam
 
 ### Bericht zum Umsetzungsprozess
