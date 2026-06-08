@@ -272,7 +272,9 @@ Das Projekt wurde in zwei Teile aufgeteilt: Physical Computing und Web-App. Die 
 
 Die Web-App wurde iterativ aufgebaut: Zuerst nur Login und eine einfache Statusanzeige, dann die Session-Logik für die Zeiterfassung, danach die Statistiken und zuletzt kleinere Anpassungen wie das Live-Update des Tagesziels auf der LED.
 
-Die grösste Herausforderung war die Zeitberechnung: Laufende Sessions müssen live in den Fortschritt einberechnet werden. Auch das Zusammenspiel zwischen Zieländerung auf der Website und der LED-Anzeige am Gerät brauchte mehrere Anpassungen.
+Im Bereich Physical Computing wurde zuerst die Kommunikation zwischen dem ESP32, dem NFC-Sensor und dem LED-Ring aufgebaut. Anschliessend wurde die Verbindung zur Web-App umgesetzt, damit die Statusdaten zwischen Hardware und Server ausgetauscht werden können. Der NFC-Sensor erkennt dabei, ob sich der Nuggi im Tresor befindet, während der LED-Ring den aktuellen Fortschritt anzeigt.
+
+Die grösste Herausforderung war die Zeitberechnung: Laufende Sessions müssen live in den Fortschritt einberechnet werden. Auch das Zusammenspiel zwischen Zieländerung auf der Website und der LED-Anzeige am Gerät brauchte mehrere Anpassungen. Zusätzlich musste die Kommunikation zwischen Hardware und Web-App zuverlässig funktionieren, damit der aktuelle Status jederzeit korrekt angezeigt wird.
 
 ---
 
@@ -284,4 +286,8 @@ Die grösste Herausforderung war die Zeitberechnung: Laufende Sessions müssen l
 
 ### Lernfortschritt
 
-Durch das Projekt habe ich gelernt, wie man eine REST-API mit PHP aufbaut und mit einem Frontend verbindet. Neu war für mich die token-basierte Authentifizierung für Hardware-Geräte und das Arbeiten mit zeitbasierter Datenbanklogik. Ein wichtiges Learning war, das Datenbankschema früh sorgfältig zu planen — nachträgliche Änderungen auf einem Live-System sind aufwändig. Ausserdem habe ich gemerkt, wie entscheidend eine klar definierte Schnittstelle zwischen Hardware und Web ist, damit beide Seiten unabhängig entwickelt werden können.
+Durch das Projekt haben wir gelernt, wie man eine REST-API mit PHP aufbaut und mit einem Frontend verbindet. Neu war für uns die token-basierte Authentifizierung für Hardware-Geräte und das Arbeiten mit zeitbasierter Datenbanklogik.
+
+Zusätzlich konnten wir erste Erfahrungen im Bereich Physical Computing sammeln. Dabei haben wir gelernt, wie Sensoren und Aktoren mit einem ESP32 angesteuert werden und wie Hardware mit einer Web-Anwendung kommunizieren kann. Zudem haben wir uns mit der Einbindung eines NFC-Sensors und eines LED-Rings beschäftigt.
+
+Ein wichtiges Learning war, das Datenbankschema früh sorgfältig zu planen. Nachträgliche Änderungen auf einem Live-System sind aufwändig. Ausserdem haben wir gemerkt, wie entscheidend eine klar definierte Schnittstelle zwischen Hardware und Web ist, damit beide Seiten unabhängig entwickelt werden können.
