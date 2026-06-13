@@ -41,7 +41,7 @@ function render(data) {
     document.getElementById('statusSubtitle').textContent = 'Weiter so – toll gemacht!';
   } else {
     statusCard.classList.add('nuggi-out');
-    document.getElementById('statusTitle').textContent   = 'Nuggi ist draußen';
+    document.getElementById('statusTitle').textContent   = 'Nuggi ist draussen';
     document.getElementById('statusSubtitle').textContent = 'Lege den Nuggi in den Tresor';
   }
 

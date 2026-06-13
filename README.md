@@ -95,7 +95,7 @@ Die Datenbank speichert pro Tag eine Zusammenfassung (Tagesziel, absolvierte Min
 
 #### Komponentenplan
 
-![Komponentenplan](imgreadme/komponentenplan.png)
+![Komponentenplan](imgreadme/Komponentenplan.png)
 
 ### Sensoren und Aktoren
 
@@ -177,7 +177,7 @@ Wird der Schnuller entfernt, bleibt der aktuelle Fortschritt zunächst sichtbar.
 ![LED Ring leuchtet](imgreadme/LEDRingleuchtet.jpeg)
 
 ##### ESP32 mit NFC Reader und Batterie
-
+ 
 ![Steckplan Bild](imgreadme/Steckplan_Bild.jpeg)
 ![Steckplan Bild mit Batterie](imgreadme/MitBatterie.jpeg)
 

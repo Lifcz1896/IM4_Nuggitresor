@@ -48,7 +48,7 @@ function renderTresors(tresors) {
               <h2>${t.name}</h2>
               <div class="tresor-status">
                 <span class="status-dot ${nuggiIn ? "in" : ""}"></span>
-                <span>${nuggiIn ? "Nuggi drin" : "Nuggi draußen"}</span>
+                <span>${nuggiIn ? "Nuggi drin" : "Nuggi draussen"}</span>
               </div>
               ${sessionStart ? `<div class="session-live-row"><span class="session-timer-icon">⏱</span><span class="session-timer" data-start="${sessionStart}">${formatLiveDuration(sessionStart)}</span></div>` : ""}
             </div>
