@@ -280,7 +280,7 @@ Die grösste Herausforderung war die Zeitberechnung: Laufende Sessions müssen l
 
 ### Video-Dokumentation
 
-> Link zum Video: _[wird ergänzt]_
+> Link zum Video: _(https://youtu.be/WAhzvgWNhm0)_
 
 ---
 
