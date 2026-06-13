@@ -14,22 +14,6 @@ form > div {
   margin-bottom: 1em;
 }
 
-label {
-  display: inline-block;
-  width: 80px;
-}
-
-input[type="email"],
-input[type="password"] {
-  width: 200px;
-  padding: 4px;
-}
-
-button {
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
 p {
   margin-top: 1em;
 }
@@ -1198,10 +1182,11 @@ input[type="range"]::-moz-range-thumb {
   color: #555;
 }
 
-.back-btn { display: none; }
-
-@media (min-width: 768px) {
-  .back-btn { display: flex; }
+@media (max-width: 767px) {
+  .stats-page-header .back-btn,
+  .stats-page-header .header-spacer {
+    display: none;
+  }
 }
 
 /* ===== MOBILE BOTTOM TAB BAR ===== */

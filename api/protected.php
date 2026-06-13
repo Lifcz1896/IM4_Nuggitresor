@@ -1,5 +1,5 @@
 <?php
-// index.php (API that returns JSON about the logged-in user)
+// protected.php (API that returns JSON about the logged-in user)
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
